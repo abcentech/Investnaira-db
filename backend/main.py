@@ -38,6 +38,8 @@ ALLOWED_ORIGINS = [
     "https://investnaira.ng",
     "https://www.investnaira.ng",
     "https://app.investnaira.ng",
+    "https://investnaira-api.onrender.com",
+    "https://investnaira.netlify.app",
     "http://localhost:3000",
     "http://localhost:5500",
     "http://127.0.0.1:5500",

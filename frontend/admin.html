@@ -483,11 +483,7 @@ input,select,textarea{font:inherit;color:inherit}
 <script>
 'use strict';
 // ── CONFIG ──────────────────────────────────────────────────────────
-const API = (()=>{
-  const h = window.location.hostname;
-  if(h==='app.investnaira.ng') return 'https://api.investnaira.ng';
-  return 'http://localhost:8000';
-})();
+const API = 'https://investnaira-api.onrender.com';
 
 // ── STATE ────────────────────────────────────────────────────────────
 let token = localStorage.getItem('in_admin_token');
