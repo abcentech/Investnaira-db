@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="theme-color" content="#061A0E"/>
+<title>InvestNaira — Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#061A0E;--surface:#0D2B18;--raised:#122F1C;
+  --border:rgba(234,230,220,.08);--bd-mid:rgba(234,230,220,.14);
+  --text:#EAE6DC;--muted:rgba(234,230,220,.42);--dim:rgba(234,230,220,.2);
+  --gold:#C9A04A;--gold-g:rgba(201,160,74,.12);
+  --green:#008751;--green-g:rgba(0,135,81,.15);
+  --pos:#3DBA7A;--neg:#E05252;--warn:#D4A017;
+  --red:#B91C1C;
+  --font-d:'Playfair Display',serif;
+  --font-u:'DM Sans',system-ui,sans-serif;
+  --font-m:'DM Mono',monospace;
+  --ease:cubic-bezier(.16,1,.3,1);--r:6px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased}
+body{background:var(--bg);color:var(--text);font-family:var(--font-u);font-size:14px;line-height:1.6;overflow-x:hidden;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(0,135,81,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,135,81,.02) 1px,transparent 1px);
+  background-size:48px 48px;mask-image:radial-gradient(ellipse 80% 80% at 50% 0%,black 40%,transparent 100%)}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-thumb{background:rgba(234,230,220,.1);border-radius:99px}
+a{color:inherit;text-decoration:none}button{font:inherit;border:none;cursor:pointer;color:inherit}
+input,select,textarea{font:inherit;color:inherit}
+
+/* ── LOGIN ── */
+#login-screen{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;background:var(--bg);padding:24px}
+.adm-login-card{width:100%;max-width:400px;animation:fadeUp .5s var(--ease) both}
+.adm-brand{display:flex;align-items:center;gap:10px;margin-bottom:40px}
+.adm-flag{display:flex;gap:2px}
+.adm-flag span{display:block;width:4px;height:22px;border-radius:1px}
+.adm-flag span:nth-child(1){background:var(--green)}
+.adm-flag span:nth-child(2){background:var(--text);opacity:.7}
+.adm-flag span:nth-child(3){background:var(--green)}
+.adm-wordmark{font-family:var(--font-d);font-size:20px;font-weight:600;letter-spacing:-.02em}
+.adm-sub{font-family:var(--font-m);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--neg);margin-top:2px}
+.adm-headline{font-family:var(--font-d);font-size:2rem;font-weight:600;letter-spacing:-.03em;margin-bottom:8px}
+.adm-desc{font-size:.87rem;color:var(--muted);margin-bottom:32px}
+.field{margin-bottom:14px}
+.field-label{font-family:var(--font-m);font-size:.65rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:5px}
+.field-input{width:100%;padding:11px 14px;background:var(--surface);border:1px solid var(--bd-mid);border-radius:var(--r);font-size:.87rem;color:var(--text);outline:none;transition:border-color .2s}
+.field-input:focus{border-color:rgba(201,160,74,.5)}
+#adm-login-error{display:none;padding:10px 14px;border-radius:var(--r);margin-bottom:14px;background:rgba(224,82,82,.1);border:1px solid rgba(224,82,82,.2);font-size:.83rem;color:var(--neg)}
+.btn-adm-login{width:100%;padding:12px;border-radius:var(--r);background:var(--red);color:var(--text);font-family:var(--font-m);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:opacity .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-adm-login:hover{opacity:.85}
+.btn-adm-login:disabled{opacity:.4;cursor:not-allowed}
+
+/* ── SHELL ── */
+#app-shell{display:none;min-height:100vh;position:relative;z-index:1}
+
+/* ── TOPBAR ── */
+#topbar{position:sticky;top:0;z-index:200;height:54px;background:rgba(6,26,14,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 28px;gap:14px}
+.tb-logo{display:flex;align-items:center;gap:8px}
+.tb-logo-flag{display:flex;gap:2px}
+.tb-logo-flag span{display:block;width:3px;height:14px;border-radius:1px}
+.tb-logo-flag span:nth-child(1){background:var(--green)}
+.tb-logo-flag span:nth-child(2){background:var(--text);opacity:.6}
+.tb-logo-flag span:nth-child(3){background:var(--green)}
+.tb-logo-name{font-family:var(--font-d);font-size:15px;font-weight:600}
+.tb-badge{padding:2px 8px;border-radius:3px;background:rgba(185,28,28,.2);border:1px solid rgba(185,28,28,.3);font-family:var(--font-m);font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;color:var(--neg)}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.tb-admin-name{font-size:.85rem;font-weight:500}
+.tb-divider{width:1px;height:18px;background:var(--border)}
+.tb-btn-sm{padding:5px 11px;border-radius:var(--r);font-family:var(--font-m);font-size:.68rem;letter-spacing:.07em;text-transform:uppercase;border:1px solid var(--bd-mid);color:var(--muted);transition:all .15s}
+.tb-btn-sm:hover{color:var(--text);border-color:var(--muted)}
+
+/* ── LAYOUT ── */
+#layout{display:flex;min-height:calc(100vh - 54px)}
+
+/* ── SIDEBAR ── */
+#sidebar{width:210px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);position:sticky;top:54px;height:calc(100vh - 54px);display:flex;flex-direction:column;overflow-y:auto}
+.sb-section{font-family:var(--font-m);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);padding:18px 18px 5px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 14px;margin:1px 7px;border-radius:var(--r);font-size:.85rem;font-weight:500;color:var(--muted);cursor:pointer;transition:all .15s}
+.nav-item:hover{background:rgba(234,230,220,.04);color:var(--text)}
+.nav-item.active{background:rgba(185,28,28,.12);color:#F87171}
+.nav-ic{font-size:13px;width:16px;text-align:center;flex-shrink:0}
+.sb-stats{margin:auto 0 0;padding:14px;border-top:1px solid var(--border)}
+.sb-stat-lbl{font-family:var(--font-m);font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);margin-bottom:3px}
+.sb-stat-val{font-family:var(--font-d);font-size:20px;font-weight:600;letter-spacing:-.03em;color:var(--text)}
+.sb-stat-sub{font-size:.75rem;color:var(--pos);margin-top:2px}
+
+/* ── MAIN ── */
+#main{flex:1;padding:32px 36px;max-width:1280px;min-width:0}
+
+/* ── PAGE HEADER ── */
+.pg-header{margin-bottom:28px}
+.pg-title{font-family:var(--font-d);font-size:1.7rem;font-weight:600;letter-spacing:-.03em;margin-bottom:4px}
+.pg-sub{font-size:.87rem;color:var(--muted)}
+
+/* ── CARDS ── */
+.card{background:var(--surface);border-radius:8px;border:1px solid var(--border);transition:border-color .2s}
+.card:hover{border-color:var(--bd-mid)}
+.cp{padding:22px}
+
+/* ── KPIs ── */
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:22px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:22px}
+.g21{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:22px}
+.mb22{margin-bottom:22px}
+.kpi-lbl{font-family:var(--font-m);font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
+.kpi-val{font-family:var(--font-d);font-size:2rem;font-weight:600;letter-spacing:-.04em;color:var(--text);line-height:1;margin-bottom:7px;font-variant-numeric:tabular-nums}
+.kpi-delta{font-family:var(--font-m);font-size:.72rem;color:var(--muted);display:flex;align-items:center;gap:4px}
+.pos{color:var(--pos)}.neg-c{color:var(--neg)}.neu{color:var(--muted)}
+
+/* ── SECTION HEADS ── */
+.sh{font-family:var(--font-d);font-size:1.15rem;font-weight:600;letter-spacing:-.02em}
+.sh-sub{font-size:.82rem;color:var(--muted);margin-top:2px}
+
+/* ── TABLE ── */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{text-align:left;font-family:var(--font-m);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);padding:0 14px 10px;border-bottom:1px solid rgba(234,230,220,.06)}
+.tbl td{padding:11px 14px;font-size:.85rem;border-bottom:1px solid rgba(234,230,220,.04);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tbody tr{transition:background .12s;cursor:pointer}
+.tbl tbody tr:hover td{background:rgba(234,230,220,.025)}
+.tbl th.sort-asc::after{content:' ↑'}.tbl th.sort-desc::after{content:' ↓'}
+.mono{font-family:var(--font-m)}.tr{text-align:right}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:999px;font-family:var(--font-m);font-size:.67rem;font-weight:400}
+.b-ok{background:rgba(61,186,122,.1);color:var(--pos)}.b-warn{background:rgba(212,160,23,.1);color:var(--warn)}
+.b-neg{background:rgba(224,82,82,.1);color:var(--neg)}.b-neu{background:rgba(234,230,220,.06);color:var(--muted)}
+.b-gold{background:rgba(201,160,74,.1);color:var(--gold)}.b-red{background:rgba(185,28,28,.1);color:#F87171}
+
+/* ── SEARCH & FILTER BAR ── */
+.filter-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.search-wrap{position:relative;flex:1;min-width:200px;max-width:360px}
+.search-ic{position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--dim);pointer-events:none}
+.search-input{width:100%;padding:8px 12px 8px 34px;background:var(--raised);border:1px solid var(--bd-mid);border-radius:var(--r);font-size:.85rem;color:var(--text);outline:none;transition:border-color .2s}
+.search-input:focus{border-color:rgba(201,160,74,.4)}
+.search-input::placeholder{color:var(--dim)}
+.sel{padding:8px 12px;background:var(--raised);border:1px solid var(--bd-mid);border-radius:var(--r);font-size:.82rem;color:var(--muted);outline:none;cursor:pointer}
+.sel:focus{border-color:rgba(201,160,74,.4)}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--r);font-family:var(--font-m);font-size:.7rem;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn-ghost{background:transparent;border:1px solid var(--bd-mid);color:var(--muted)}
+.btn-ghost:hover{color:var(--text);border-color:var(--muted)}
+.btn-primary{background:var(--gold);color:var(--bg);border:none}
+.btn-primary:hover{opacity:.85}
+.btn-danger{background:transparent;border:1px solid rgba(185,28,28,.4);color:#F87171}
+.btn-danger:hover{background:rgba(185,28,28,.1)}
+.btn-green{background:var(--green);color:var(--text);border:none}
+.btn-green:hover{opacity:.85}
+
+/* ── PAGINATION ── */
+.pager{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;border-top:1px solid rgba(234,230,220,.05);flex-wrap:wrap;gap:8px}
+.pg-info{font-family:var(--font-m);font-size:.72rem;color:var(--muted)}
+.pg-btns{display:flex;gap:5px;align-items:center}
+.pg-btn{padding:4px 11px;border-radius:var(--r);font-family:var(--font-m);font-size:.68rem;cursor:pointer;border:1px solid var(--bd-mid);background:transparent;color:var(--muted);transition:all .15s}
+.pg-btn:hover:not(:disabled){color:var(--text);border-color:var(--muted)}
+.pg-btn:disabled{opacity:.3;cursor:default}
+.pg-curr{font-family:var(--font-m);font-size:.72rem;color:var(--muted);min-width:46px;text-align:center}
+
+/* ── UPLOAD ZONE ── */
+.upload-zone{border:2px dashed var(--bd-mid);border-radius:10px;padding:52px 32px;text-align:center;cursor:pointer;transition:all .25s;position:relative}
+.upload-zone.drag-over{border-color:var(--gold);background:var(--gold-g)}
+.upload-zone:hover{border-color:rgba(201,160,74,.4)}
+.upload-icon{font-size:40px;margin-bottom:14px;opacity:.5}
+.upload-title{font-family:var(--font-d);font-size:1.2rem;font-weight:600;letter-spacing:-.02em;margin-bottom:8px}
+.upload-desc{font-size:.85rem;color:var(--muted);margin-bottom:20px;max-width:40ch;margin-inline:auto}
+.upload-formats{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+.fmt-tag{padding:3px 10px;border-radius:4px;background:var(--raised);border:1px solid var(--bd-mid);font-family:var(--font-m);font-size:.68rem;color:var(--muted)}
+#file-input{display:none}
+
+/* ── UPLOAD STATUS ── */
+.upload-status{border-radius:8px;padding:16px 20px;margin-top:16px;display:none}
+.upload-status.show{display:flex;align-items:center;gap:12px}
+.upload-status.success{background:rgba(61,186,122,.08);border:1px solid rgba(61,186,122,.2)}
+.upload-status.error{background:rgba(224,82,82,.08);border:1px solid rgba(224,82,82,.2)}
+.upload-status.loading{background:rgba(201,160,74,.06);border:1px solid rgba(201,160,74,.15)}
+.upload-spinner{width:18px;height:18px;border:2px solid rgba(201,160,74,.2);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
+.upload-status-text{font-size:.87rem;line-height:1.5}
+.upload-stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}
+.up-stat{background:var(--raised);border-radius:6px;padding:14px;text-align:center}
+.up-stat-val{font-family:var(--font-d);font-size:1.5rem;font-weight:600;color:var(--gold)}
+.up-stat-lbl{font-family:var(--font-m);font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-top:2px}
+
+/* ── CLIENT DETAIL DRAWER ── */
+#detail-drawer{
+  position:fixed;top:0;right:-520px;width:520px;height:100vh;
+  background:var(--surface);border-left:1px solid var(--border);
+  z-index:500;transition:right .3s var(--ease);
+  display:flex;flex-direction:column;overflow-y:auto;
+}
+#detail-drawer.open{right:0}
+.drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:499;display:none;backdrop-filter:blur(3px)}
+.drawer-overlay.show{display:block}
+.drawer-head{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;flex-shrink:0;position:sticky;top:0;background:var(--surface);z-index:1}
+.drawer-close{width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;background:rgba(234,230,220,.06);margin-left:auto;font-size:16px;cursor:pointer;transition:background .15s}
+.drawer-close:hover{background:rgba(234,230,220,.1)}
+.drawer-body{padding:22px 24px;flex:1}
+.drawer-avatar{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--green),#005c37);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:15px;font-weight:600;flex-shrink:0}
+.drawer-name{font-family:var(--font-d);font-size:1.1rem;font-weight:600;letter-spacing:-.02em}
+.drawer-email{font-size:.8rem;color:var(--muted);margin-top:2px}
+.drawer-section{font-family:var(--font-m);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.drawer-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(234,230,220,.04)}
+.drawer-row:last-child{border-bottom:none}
+.drawer-key{font-size:.82rem;color:var(--muted)}
+.drawer-val{font-family:var(--font-m);font-size:.82rem;font-weight:500;color:var(--text)}
+.editable-row{display:flex;gap:8px;align-items:center;padding:8px 0}
+.inline-input{flex:1;padding:6px 10px;background:var(--raised);border:1px solid var(--bd-mid);border-radius:4px;font-size:.82rem;color:var(--text);outline:none;transition:border-color .2s}
+.inline-input:focus{border-color:rgba(201,160,74,.4)}
+.toggle-active{display:flex;align-items:center;gap:8px;padding:8px 0}
+.toggle-track{width:40px;height:22px;border-radius:999px;border:1px solid var(--bd-mid);background:rgba(234,230,220,.06);position:relative;cursor:pointer;transition:background .2s,border-color .2s;flex-shrink:0}
+.toggle-track.on{background:rgba(61,186,122,.25);border-color:rgba(61,186,122,.4)}
+.toggle-knob{position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:var(--muted);transition:transform .2s,background .2s}
+.toggle-track.on .toggle-knob{transform:translateX(18px);background:var(--pos)}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:24px;right:24px;z-index:1000;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast-item{padding:11px 16px;border-radius:8px;font-size:.85rem;font-weight:500;min-width:240px;animation:slideIn .3s var(--ease) both;pointer-events:all}
+.toast-ok{background:rgba(61,186,122,.15);border:1px solid rgba(61,186,122,.25);color:var(--pos)}
+.toast-err{background:rgba(224,82,82,.12);border:1px solid rgba(224,82,82,.25);color:var(--neg)}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+
+/* ── LOADING ── */
+#loading{display:none;position:fixed;inset:0;z-index:900;background:rgba(6,26,14,.7);backdrop-filter:blur(3px);align-items:center;justify-content:center;flex-direction:column;gap:12px}
+#loading.show{display:flex}
+.spinner-lg{width:32px;height:32px;border:2px solid rgba(201,160,74,.2);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite}
+.load-txt{font-family:var(--font-m);font-size:.75rem;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.e{animation:fadeUp .3s var(--ease) both}
+.d1{animation-delay:40ms}.d2{animation-delay:80ms}.d3{animation-delay:120ms}.d4{animation-delay:160ms}
+
+/* ── MODALS ── */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(5px);z-index:800;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-bg.show{display:flex}
+.modal-box{background:var(--surface);border-radius:10px;border:1px solid var(--bd-mid);width:100%;max-width:460px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,.5);animation:fadeUp .25s var(--ease) both}
+.mh{padding:18px 22px 14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;position:sticky;top:0;background:var(--surface);z-index:1}
+.mh-title{font-family:var(--font-d);font-size:1.1rem;font-weight:600;letter-spacing:-.02em}
+.mh-sub{font-size:.78rem;color:var(--muted);margin-top:2px}
+.mx{width:28px;height:28px;border-radius:5px;background:rgba(234,230,220,.06);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;flex-shrink:0;transition:background .15s}
+.mx:hover{background:rgba(234,230,220,.12)}
+.mb{padding:18px 22px}
+.mf{padding:12px 22px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+.fg{margin-bottom:13px}
+.fg:last-child{margin-bottom:0}
+.fl{font-family:var(--font-m);font-size:.63rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:5px}
+.fl .req{color:var(--neg)}
+.fi{width:100%;padding:9px 12px;background:var(--raised);border:1px solid var(--bd-mid);border-radius:var(--r);font-size:.86rem;color:var(--text);outline:none;transition:border-color .2s}
+.fi:focus{border-color:rgba(201,160,74,.5)}
+.fi::placeholder{color:var(--dim)}
+.fs{width:100%;padding:9px 12px;background:var(--raised);border:1px solid var(--bd-mid);border-radius:var(--r);font-size:.86rem;color:var(--text);outline:none;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23EAE6DC' stroke-opacity='.3' stroke-width='1.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;transition:border-color .2s}
+.fs:focus{border-color:rgba(201,160,74,.5)}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.merr{display:none;padding:9px 12px;border-radius:var(--r);background:rgba(224,82,82,.1);border:1px solid rgba(224,82,82,.2);font-size:.82rem;color:var(--neg);margin-bottom:12px}
+.tx-preview{display:none;padding:12px 14px;background:var(--raised);border-radius:var(--r);border:1px solid var(--border);margin-top:4px}
+
+@media(max-width:1100px){.g4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:900px){#sidebar{display:none}#main{padding:20px 16px}.g3,.g21{grid-template-columns:1fr}.g2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div id="loading"><div class="spinner-lg"></div><div class="load-txt">Loading…</div></div>
+<div id="toast"></div>
+<div id="detail-drawer"><div class="drawer-head"><div class="drawer-avatar" id="dr-avatar"></div><div><div class="drawer-name" id="dr-name"></div><div class="drawer-email" id="dr-email"></div></div><div class="drawer-close" onclick="closeDrawer()">✕</div></div><div class="drawer-body" id="dr-body"></div></div>
+<div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="adm-login-card">
+    <div class="adm-brand">
+      <div class="adm-flag"><span></span><span></span><span></span></div>
+      <div><div class="adm-wordmark">InvestNaira</div><div class="adm-sub">Admin Panel</div></div>
+    </div>
+    <div class="adm-headline">Admin Access</div>
+    <p class="adm-desc">Restricted to InvestNaira administrators only. All actions are logged.</p>
+    <div id="adm-login-error"></div>
+    <form onsubmit="adminLogin(event)">
+      <div class="field"><label class="field-label" for="adm-email">Admin Email</label><input class="field-input" id="adm-email" type="email" placeholder="admin@investnaira.ng" required autocomplete="username"/></div>
+      <div class="field"><label class="field-label" for="adm-pass">Password</label><input class="field-input" id="adm-pass" type="password" placeholder="••••••••" required autocomplete="current-password"/></div>
+      <button type="submit" class="btn-adm-login" id="adm-login-btn">Sign in to Admin Panel</button>
+    </form>
+  </div>
+</div>
+
+<!-- SHELL -->
+<div id="app-shell">
+  <!-- TOPBAR -->
+  <div id="topbar">
+    <div class="tb-logo">
+      <div class="tb-logo-flag"><span></span><span></span><span></span></div>
+      <span class="tb-logo-name">InvestNaira</span>
+    </div>
+    <span class="tb-badge">Admin</span>
+    <div class="tb-right">
+      <span class="tb-admin-name" id="tb-admin-name">Administrator</span>
+      <div class="tb-divider"></div>
+      <button class="tb-btn-sm" onclick="adminLogout()">Sign out</button>
+    </div>
+  </div>
+
+  <!-- LAYOUT -->
+  <div id="layout">
+    <!-- SIDEBAR -->
+    <nav id="sidebar">
+      <div class="sb-section">Dashboard</div>
+      <div class="nav-item active" data-tab="dashboard" onclick="switchTab('dashboard',this)"><span class="nav-ic">◎</span>Overview</div>
+      <div class="nav-item" data-tab="clients" onclick="switchTab('clients',this)"><span class="nav-ic">◉</span>Clients</div>
+      <div class="nav-item" data-tab="upload" onclick="switchTab('upload',this)"><span class="nav-ic">↑</span>Upload Data</div>
+      <div class="nav-item" data-tab="analytics" onclick="switchTab('analytics',this)"><span class="nav-ic">↗</span>Analytics</div>
+      <div class="sb-stats">
+        <div class="sb-stat-lbl">Total AUM</div>
+        <div class="sb-stat-val" id="sb-aum">—</div>
+        <div class="sb-stat-sub" id="sb-clients-count">— clients</div>
+      </div>
+    </nav>
+
+    <!-- MAIN -->
+    <main id="main">
+
+      <!-- DASHBOARD -->
+      <div id="pg-dashboard" class="page">
+        <div class="pg-header e">
+          <div class="pg-title">Platform Overview</div>
+          <div class="pg-sub" id="dash-subtitle">InvestNaira client portfolio summary</div>
+        </div>
+        <div class="g4 e d1" id="kpi-row"></div>
+        <div class="g21 e d2">
+          <div class="card cp">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+              <div><div class="sh">Top 10 Clients</div><div class="sh-sub">By net assets</div></div>
+              <button class="btn btn-ghost" onclick="switchTab('clients',document.querySelector('[data-tab=clients]'))">View all →</button>
+            </div>
+            <div style="overflow-x:auto">
+              <table class="tbl">
+                <thead><tr><th>#</th><th>Client</th><th class="tr">Assets</th><th>Txns</th><th>Since</th></tr></thead>
+                <tbody id="top-clients-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card cp">
+            <div class="sh" style="margin-bottom:4px">Asset Distribution</div>
+            <div class="sh-sub" style="margin-bottom:18px">Top 10 by share of AUM</div>
+            <canvas id="aum-chart" height="220"></canvas>
+          </div>
+        </div>
+        <div class="g3 e d3" id="platform-cards"></div>
+      </div>
+
+      <!-- CLIENTS -->
+      <div id="pg-clients" class="page" style="display:none">
+        <div class="pg-header e">
+          <div class="pg-title">Client Management</div>
+          <div class="pg-sub">All <span id="total-count">—</span> registered clients · click any row to view details</div>
+        </div>
+        <div class="card e d1">
+          <div style="padding:16px 20px;border-bottom:1px solid rgba(234,230,220,.06)">
+            <div class="filter-bar">
+              <div class="search-wrap">
+                <span class="search-ic">⌕</span>
+                <input class="search-input" id="client-search" type="search" placeholder="Search name, email, phone…" oninput="debounceSearch()"/>
+              </div>
+              <select class="sel" id="sort-by" onchange="loadClients()">
+                <option value="assets">Sort: Net Assets</option>
+                <option value="name">Sort: Name A–Z</option>
+                <option value="tx_count">Sort: Transactions</option>
+                <option value="since">Sort: Member Since</option>
+              </select>
+              <select class="sel" id="sort-order" onchange="loadClients()">
+                <option value="desc">↓ Descending</option>
+                <option value="asc">↑ Ascending</option>
+              </select>
+              <button class="btn btn-ghost" onclick="exportAllCSV()">⬇ Export CSV</button>
+            </div>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="tbl">
+              <thead><tr>
+                <th>Rank</th><th>Client</th><th>Email</th><th>Phone</th>
+                <th class="tr">Assets</th><th class="tr">Deposited</th>
+                <th>Txns</th><th>Since</th><th>Status</th>
+              </tr></thead>
+              <tbody id="clients-tbody"></tbody>
+            </table>
+          </div>
+          <div class="pager">
+            <span class="pg-info" id="cl-info">—</span>
+            <div class="pg-btns">
+              <button class="pg-btn" id="cl-prev" onclick="clPage(-1)">← Prev</button>
+              <span class="pg-curr" id="cl-lbl">1/1</span>
+              <button class="pg-btn" id="cl-next" onclick="clPage(1)">Next →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- UPLOAD -->
+      <div id="pg-upload" class="page" style="display:none">
+        <div class="pg-header e">
+          <div class="pg-title">Upload Transaction Database</div>
+          <div class="pg-sub">Upload a new .tsv, .csv, or .xlsx file — the system will re-parse all client records and update live</div>
+        </div>
+        <div class="g2">
+          <div class="card cp e d1">
+            <div class="sh" style="margin-bottom:6px">Drop or Select File</div>
+            <div class="sh-sub" style="margin-bottom:20px">Supports the InvestNaira transaction database format</div>
+            <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFile(event)">
+              <div class="upload-icon">📂</div>
+              <div class="upload-title">Drag & drop your file here</div>
+              <div class="upload-desc">Or click to browse. The database will update immediately after parsing completes.</div>
+              <button class="btn btn-primary" onclick="event.stopPropagation();document.getElementById('file-input').click()">Browse File</button>
+              <div class="upload-formats">
+                <span class="fmt-tag">.TSV</span><span class="fmt-tag">.CSV</span><span class="fmt-tag">.XLSX</span><span class="fmt-tag">.XLS</span>
+              </div>
+            </div>
+            <input type="file" id="file-input" accept=".tsv,.csv,.xlsx,.xls" onchange="uploadFile(this.files[0])"/>
+            <div class="upload-status" id="upload-status">
+              <div class="upload-spinner" id="up-spinner"></div>
+              <div class="upload-status-text" id="up-text"></div>
+            </div>
+            <div class="upload-stats-row" id="upload-stats" style="display:none"></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:16px">
+            <div class="card cp e d2">
+              <div class="sh" style="margin-bottom:14px">Upload Requirements</div>
+              <div style="display:flex;flex-direction:column;gap:10px" id="req-list">
+                ${['Expected column order: SN, Hash, Email, First Name, Last Name, Phone, Date, Amount, Type, Status',
+                   'Email must be valid — used as unique client identifier',
+                   'Amount must be numeric (commas allowed)',
+                   'Date can be ISO (2024-01-07T00:00:00Z) or short (Jan 7)',
+                   'Transaction types: Deposit, Withdrawal, Returns, Credit, Debit',
+                   'Missing rows are skipped — the system is fault-tolerant',
+                   'Uploading a new file completely replaces the database'
+                  ].map(t=>`<div style="display:flex;gap:9px;font-size:.83rem;color:var(--muted);line-height:1.5">
+                    <span style="color:var(--pos);flex-shrink:0;margin-top:1px">✓</span><span>${t}</span></div>`).join('')}
+              </div>
+            </div>
+            <div class="card cp e d3">
+              <div class="sh" style="margin-bottom:14px">Upload History</div>
+              <div id="upload-history" style="display:flex;flex-direction:column;gap:8px">
+                <div style="font-size:.83rem;color:var(--muted)">No recent uploads recorded.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ANALYTICS -->
+      <div id="pg-analytics" class="page" style="display:none">
+        <div class="pg-header e">
+          <div class="pg-title">Platform Analytics</div>
+          <div class="pg-sub">Aggregate portfolio and activity metrics</div>
+        </div>
+        <div class="g2 e d1">
+          <div class="card cp">
+            <div class="sh" style="margin-bottom:4px">Asset Concentration</div>
+            <div class="sh-sub" style="margin-bottom:18px">Top 20 clients' share of total AUM</div>
+            <canvas id="an-concentration" height="280"></canvas>
+          </div>
+          <div class="card cp">
+            <div class="sh" style="margin-bottom:4px">Retention Distribution</div>
+            <div class="sh-sub" style="margin-bottom:18px">% of deposits retained by client bucket</div>
+            <canvas id="an-retention" height="280"></canvas>
+          </div>
+        </div>
+        <div class="card cp e d2 mb22">
+          <div class="sh" style="margin-bottom:4px">Platform Activity by Year</div>
+          <div class="sh-sub" style="margin-bottom:18px">Aggregate inflows and outflows across all clients</div>
+          <canvas id="an-yearly" height="180"></canvas>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script>
+'use strict';
+// ── CONFIG ──────────────────────────────────────────────────────────
+const API = (()=>{
+  const h = window.location.hostname;
+  if(h==='app.investnaira.ng') return 'https://api.investnaira.ng';
+  return 'http://localhost:8000';
+})();
+
+// ── STATE ────────────────────────────────────────────────────────────
+let token = localStorage.getItem('in_admin_token');
+let stats = null;
+let clientsPage = 1;
+const CL_PER_PAGE = 50;
+let searchTimer = null;
+let charts = {};
+let uploadHistory = JSON.parse(localStorage.getItem('in_upload_history')||'[]');
+let activeDrawerEmail = null;
+
+// ── UTILS ────────────────────────────────────────────────────────────
+const fmt = n => '₦' + Math.abs(n).toLocaleString('en-NG',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fmtK = n => n>=1e9?'₦'+(n/1e9).toFixed(2)+'B':n>=1e6?'₦'+(n/1e6).toFixed(2)+'M':n>=1e3?'₦'+(n/1e3).toFixed(0)+'K':fmt(n);
+const initials = c => (c.fn||'').slice(0,1)+(c.ln||'').slice(0,1);
+const showEl = (id,flex=false) => { const el=document.getElementById(id); if(el) el.style.display=flex?'flex':'block'; };
+const hideEl = id => { const el=document.getElementById(id); if(el) el.style.display='none'; };
+
+function toast(msg, type='ok'){
+  const t=document.createElement('div');
+  t.className='toast-item toast-'+(type==='ok'?'ok':'err');
+  t.textContent=(type==='ok'?'✓ ':'✕ ')+msg;
+  document.getElementById('toast').appendChild(t);
+  setTimeout(()=>t.remove(),3500);
+}
+
+const chartFont=(size=10)=>({family:'DM Mono, monospace',size});
+const tooltipStyle={backgroundColor:'rgba(4,14,7,.96)',titleFont:chartFont(11),bodyFont:chartFont(12),padding:12,cornerRadius:6,borderWidth:1,borderColor:'rgba(234,230,220,.08)',callbacks:{label:c=>`  ₦${c.raw.toLocaleString('en-NG',{minimumFractionDigits:0})}`}};
+
+function destroyCharts(){ Object.values(charts).forEach(c=>{try{c.destroy();}catch{}}); charts={}; }
+
+// ── AUTH ─────────────────────────────────────────────────────────────
+async function apiFetch(path, opts={}){
+  const headers={'Content-Type':'application/json'};
+  if(token) headers['Authorization']='Bearer '+token;
+  const res = await fetch(API+path,{...opts,headers});
+  if(res.status===401){ adminLogout(); return null; }
+  if(!res.ok){ const err=await res.json().catch(()=>({detail:'Request failed'})); throw new Error(err.detail); }
+  return res.json();
+}
+
+async function adminLogin(e){
+  e.preventDefault();
+  const errEl=document.getElementById('adm-login-error');
+  const btn=document.getElementById('adm-login-btn');
+  errEl.style.display='none'; btn.disabled=true; btn.textContent='Signing in…';
+  try {
+    const res = await fetch(API+'/api/auth/admin',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email:document.getElementById('adm-email').value.trim(),password:document.getElementById('adm-pass').value})
+    });
+    const json = await res.json();
+    if(!res.ok) throw new Error(json.detail||'Login failed');
+    token=json.token;
+    localStorage.setItem('in_admin_token',token);
+    await bootApp();
+  } catch(err){
+    errEl.textContent=err.message; errEl.style.display='block';
+  } finally { btn.disabled=false; btn.textContent='Sign in to Admin Panel'; }
+}
+
+function adminLogout(){
+  localStorage.removeItem('in_admin_token'); token=null;
+  document.getElementById('app-shell').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+}
+
+// ── BOOT ─────────────────────────────────────────────────────────────
+async function bootApp(){
+  showEl('loading',true);
+  try {
+    stats = await apiFetch('/api/admin/stats');
+    if(!stats) return;
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app-shell').style.display='block';
+    hideEl('loading');
+    populateShell();
+    renderDashboard();
+  } catch(err){
+    hideEl('loading');
+    toast('Failed to load: '+err.message,'err');
+  }
+}
+
+function populateShell(){
+  document.getElementById('sb-aum').textContent=fmtK(stats.total_assets);
+  document.getElementById('sb-clients-count').textContent=stats.client_count+' active clients';
+  document.getElementById('tb-admin-name').textContent='Administrator';
+}
+
+// ── TAB NAVIGATION ────────────────────────────────────────────────────
+function switchTab(tab, el){
+  document.querySelectorAll('.page').forEach(p=>p.style.display='none');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  showEl('pg-'+tab);
+  if(el) el.classList.add('active');
+  document.querySelectorAll('[data-tab='+tab+']').forEach(n=>n.classList.add('active'));
+  if(tab==='clients') loadClients();
+  if(tab==='upload') renderUploadHistory();
+  if(tab==='analytics') setTimeout(renderAnalytics,60);
+}
+
+// ── DASHBOARD ─────────────────────────────────────────────────────────
+function renderDashboard(){
+  const s=stats;
+  document.getElementById('dash-subtitle').textContent=
+    `${s.client_count} registered clients · ₦${(s.total_assets/1e6).toFixed(2)}M total AUM`;
+
+  // KPIs
+  document.getElementById('kpi-row').innerHTML=[
+    ['Total AUM',fmtK(s.total_assets),'Across all clients','pos'],
+    ['Total Clients',s.client_count.toLocaleString(),'Registered investors','neu'],
+    ['Returns Paid',fmtK(s.total_returns),'Investment returns distributed','pos'],
+    ['Total Transactions',s.total_transactions.toLocaleString(),'All recorded activity','neu'],
+  ].map(([l,v,s2,cls])=>`
+    <div class="card cp">
+      <div class="kpi-lbl">${l}</div>
+      <div class="kpi-val">${v}</div>
+      <div class="kpi-delta ${cls}">${s2}</div>
+    </div>`).join('');
+
+  // Platform cards
+  const retRate=(s.total_deposits>0?s.total_returns/s.total_deposits*100:0).toFixed(2);
+  const withdrawalRate=(s.total_deposits>0?s.total_withdrawals/s.total_deposits*100:0).toFixed(1);
+  document.getElementById('platform-cards').innerHTML=[
+    ['Total Deposited',fmtK(s.total_deposits),'All time client inflows'],
+    ['Total Withdrawn',fmtK(s.total_withdrawals),'Client withdrawals: '+withdrawalRate+'% of deposits'],
+    ['Platform Return Rate',retRate+'%','Returns paid ÷ total deposited'],
+  ].map(([l,v,s2])=>`
+    <div class="card cp">
+      <div class="kpi-lbl">${l}</div>
+      <div style="font-family:var(--font-d);font-size:1.7rem;font-weight:600;letter-spacing:-.03em;margin-bottom:7px;color:var(--gold)">${v}</div>
+      <div class="kpi-delta neu">${s2}</div>
+    </div>`).join('');
+
+  // Top clients table
+  document.getElementById('top-clients-tbody').innerHTML=s.top_clients.map((c,i)=>`
+    <tr onclick="openDrawer('${c.email}')">
+      <td>${i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1)}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--green),#005c37);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0">${initials(c)}</div>
+          <span style="font-weight:500">${c.fn} ${c.ln}</span>
+        </div>
+      </td>
+      <td class="mono tr">${fmt(c.assets)}</td>
+      <td class="mono">${c.tx_count}</td>
+      <td style="color:var(--muted);font-size:.8rem">${c.since||'—'}</td>
+    </tr>`).join('');
+
+  // AUM chart
+  setTimeout(()=>{
+    const ctx=document.getElementById('aum-chart'); if(!ctx) return;
+    if(charts.aum) charts.aum.destroy();
+    const topN=s.top_clients.slice(0,10);
+    charts.aum=new Chart(ctx,{
+      type:'bar',
+      data:{labels:topN.map(c=>c.fn),datasets:[{data:topN.map(c=>c.assets),backgroundColor:'rgba(201,160,74,.7)',borderRadius:4,borderSkipped:false}]},
+      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:tooltipStyle},
+        scales:{
+          x:{grid:{color:'rgba(234,230,220,.04)'},border:{display:false},ticks:{font:chartFont(9),color:'rgba(234,230,220,.3)',callback:v=>fmtK(v)}},
+          y:{grid:{display:false},border:{display:false},ticks:{font:chartFont(9.5),color:'rgba(234,230,220,.5)'}}
+        }}
+    });
+  },100);
+}
+
+// ── CLIENTS ───────────────────────────────────────────────────────────
+async function loadClients(){
+  const search=document.getElementById('client-search')?.value||'';
+  const sort=document.getElementById('sort-by')?.value||'assets';
+  const order=document.getElementById('sort-order')?.value||'desc';
+  try {
+    const data=await apiFetch(`/api/admin/clients?page=${clientsPage}&per_page=${CL_PER_PAGE}&search=${encodeURIComponent(search)}&sort=${sort}&order=${order}`);
+    if(!data) return;
+    document.getElementById('total-count').textContent=data.total;
+    document.getElementById('cl-info').textContent=`Showing ${Math.min((clientsPage-1)*CL_PER_PAGE+1,data.total)}–${Math.min(clientsPage*CL_PER_PAGE,data.total)} of ${data.total}`;
+    document.getElementById('cl-lbl').textContent=`${data.page}/${data.pages}`;
+    document.getElementById('cl-prev').disabled=clientsPage<=1;
+    document.getElementById('cl-next').disabled=clientsPage>=data.pages;
+    document.getElementById('clients-tbody').innerHTML=data.clients.map(c=>`
+      <tr onclick="openDrawer('${c.email}')">
+        <td><span class="badge b-gold" style="font-size:.67rem">#${c.rank}</span></td>
+        <td><div style="display:flex;align-items:center;gap:8px">
+          <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--green),#005c37);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0">${initials(c)}</div>
+          <div><div style="font-weight:500;font-size:.87rem">${c.fn} ${c.ln}</div><div style="font-size:.75rem;color:var(--muted)">${c.since||'—'}</div></div>
+        </div></td>
+        <td style="font-size:.82rem;color:var(--muted)">${c.email}</td>
+        <td class="mono" style="font-size:.8rem;color:var(--muted)">${c.phone||'—'}</td>
+        <td class="mono tr" style="font-weight:500;color:var(--gold)">${fmt(c.assets)}</td>
+        <td class="mono tr" style="color:var(--muted)">${fmt(c.deposits)}</td>
+        <td class="mono" style="color:var(--muted)">${c.tx_count}</td>
+        <td style="font-size:.8rem;color:var(--muted)">${c.last||'—'}</td>
+        <td>${c.active?'<span class="badge b-ok">Active</span>':'<span class="badge b-neg">Inactive</span>'}</td>
+      </tr>`).join('');
+  } catch(err){ toast('Error loading clients: '+err.message,'err'); }
+}
+
+function clPage(dir){ clientsPage=Math.max(1,clientsPage+dir); loadClients(); }
+
+function debounceSearch(){
+  clearTimeout(searchTimer);
+  searchTimer=setTimeout(()=>{ clientsPage=1; loadClients(); },320);
+}
+
+async function exportAllCSV(){
+  showEl('loading',true);
+  try {
+    const data=await apiFetch('/api/admin/clients?page=1&per_page=9999');
+    if(!data) return;
+    const rows=[['Rank','First Name','Last Name','Email','Phone','Assets','Deposited','Returns','Withdrawn','Transactions','Since','Last Activity','Active']];
+    data.clients.forEach(c=>rows.push([c.rank,c.fn,c.ln,c.email,c.phone||'',c.assets,c.deposits,c.returns,c.withdrawals,c.tx_count,c.since||'',c.last||'',c.active?'Yes':'No']));
+    const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+    a.download='investnaira_clients.csv'; a.click();
+    toast('Exported '+data.clients.length+' clients');
+  } catch(err){ toast('Export failed: '+err.message,'err'); }
+  finally{ hideEl('loading'); }
+}
+
+// ── CLIENT DETAIL DRAWER ──────────────────────────────────────────────
+// ── DRAWER ─────────────────────────────────────────────────────────────
+let drawerClient=null, drawerTxPage=1, editTxSn=null;
+const DR_PER=20;
+
+async function openDrawer(email){
+  activeDrawerEmail=email; drawerTxPage=1;
+  document.getElementById('detail-drawer').classList.add('open');
+  document.getElementById('drawer-overlay').classList.add('show');
+  document.getElementById('dr-body').innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)">Loading…</div>';
+  await refreshDrawer(email);
+}
+
+async function refreshDrawer(email){
+  try{
+    const c=await apiFetch('/api/admin/clients/'+encodeURIComponent(email||activeDrawerEmail));
+    if(!c) return;
+    drawerClient=c;
+    document.getElementById('dr-avatar').textContent=initials(c);
+    document.getElementById('dr-name').textContent=c.fn+' '+c.ln;
+    document.getElementById('dr-email').textContent=c.email;
+    buildDrawer(c);
+  }catch(err){
+    document.getElementById('dr-body').innerHTML='<div style="text-align:center;padding:40px;color:var(--neg)">Error: '+err.message+'</div>';
+  }
+}
+
+function buildDrawer(c){
+  const retRate=(c.deposits>0?c.returns/c.deposits*100:0).toFixed(2);
+  const retention=(c.deposits>0?c.assets/c.deposits*100:0).toFixed(1);
+  const txns=c.transactions||[];
+  const pages=Math.max(1,Math.ceil(txns.length/DR_PER));
+  drawerTxPage=Math.min(drawerTxPage,pages);
+  const slice=txns.slice((drawerTxPage-1)*DR_PER, drawerTxPage*DR_PER);
+
+  // Financial rows
+  const finRows=[['Net Assets',fmt(c.assets),'var(--gold)'],['Total Deposited',fmt(c.deposits),'var(--text)'],
+    ['Returns Earned','+'+fmt(c.returns),'var(--pos)'],['Total Withdrawn',fmt(c.withdrawals),'var(--text)'],
+    ['Return Rate',retRate+'%','var(--muted)'],['Retention',retention+'%','var(--muted)'],
+    ['Since',c.since||'—','var(--muted)'],['Last Activity',c.last||'—','var(--muted)']
+  ].map(([k,v,col])=>'<div class="drawer-row"><span class="drawer-key">'+k+'</span><span class="drawer-val" style="color:'+col+'">'+v+'</span></div>').join('');
+
+  // Tx rows with edit/delete
+  const txRows=slice.map(t=>{
+    const credit=t.is_credit;
+    const adm=t.added_by_admin||t.edited_by_admin?' <span style="color:rgba(201,160,74,.4);font-size:.62rem">★</span>':'';
+    const badge=(!t.status||t.status==='TBD')
+      ?'<span class="badge b-warn" style="font-size:.58rem">TBD</span>'
+      :'<span class="badge b-ok" style="font-size:.58rem">Done</span>';
+    return '<div style="display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid rgba(234,230,220,.04)" id="txr-'+t.sn+'">'
+      +'<div style="width:24px;height:24px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;background:'+(credit?'rgba(61,186,122,.1)':'rgba(224,82,82,.07)')+'">'+( credit?'↓':'↑')+'</div>'
+      +'<div style="flex:1;min-width:0">'
+        +'<div style="font-weight:500;font-size:.83rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+t.type+adm+'</div>'
+        +'<div style="font-size:.7rem;color:var(--dim)">'+t.date+'</div>'
+      +'</div>'
+      +'<div style="font-family:var(--font-m);font-size:.82rem;font-weight:500;color:'+(credit?'var(--pos)':'var(--text)')+'">'+( credit?'+':'-')+fmt(t.amount)+'</div>'
+      +badge
+      +'<div style="display:flex;gap:3px;flex-shrink:0">'
+        +'<button onclick="openEditTx(\''+t.sn+'\')" style="width:24px;height:24px;border-radius:4px;background:rgba(234,230,220,.05);border:1px solid rgba(234,230,220,.08);cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center" title="Edit">✏</button>'
+        +'<button onclick="askDeleteTx(\''+t.sn+'\')" style="width:24px;height:24px;border-radius:4px;background:rgba(224,82,82,.05);border:1px solid rgba(224,82,82,.1);cursor:pointer;font-size:10px;color:var(--neg);display:flex;align-items:center;justify-content:center" title="Delete">✕</button>'
+      +'</div>'
+      +'</div>'
+      +'<div id="del-confirm-'+t.sn+'" style="display:none;padding:8px 10px;border-radius:5px;background:rgba(224,82,82,.08);border:1px solid rgba(224,82,82,.2);margin-bottom:2px;display:none;align-items:center;gap:8px">'
+        +'<span style="font-size:.8rem;flex:1;color:var(--muted)">Delete this transaction?</span>'
+        +'<button onclick="doDeleteTx(\''+t.sn+'\')" style="padding:3px 10px;border-radius:4px;background:rgba(224,82,82,.2);border:1px solid rgba(224,82,82,.3);color:var(--neg);font-size:.72rem;cursor:pointer">Delete</button>'
+        +'<button onclick="document.getElementById(\'del-confirm-'+t.sn+'\').style.display=\'none\'" style="padding:3px 10px;border-radius:4px;background:transparent;border:1px solid var(--bd-mid);color:var(--muted);font-size:.72rem;cursor:pointer">Cancel</button>'
+      +'</div>';
+  }).join('');
+
+  const pgCtrl=txns.length>DR_PER
+    ?'<div style="display:flex;gap:4px;align-items:center">'
+      +'<button class="pg-btn"'+(drawerTxPage<=1?' disabled':'')+' onclick="drPg(-1)">←</button>'
+      +'<span style="font-size:.68rem;color:var(--muted)">'+drawerTxPage+'/'+pages+'</span>'
+      +'<button class="pg-btn"'+(drawerTxPage>=pages?' disabled':'')+' onclick="drPg(1)">→</button>'
+      +'</div>':'';
+
+  document.getElementById('dr-body').innerHTML=
+    '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">'
+    +(c.active?'<span class="badge b-ok">Active</span>':'<span class="badge b-neg">Inactive</span>')
+    +'<span class="badge b-gold">#'+c.rank+' Ranked</span>'
+    +'<span class="badge b-neu">'+c.tx_count+' txns</span></div>'
+
+    +'<div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:4px">'
+    +'<button onclick="openAddTx(\'deposit\')" class="btn" style="background:rgba(61,186,122,.15);color:var(--pos);border:1px solid rgba(61,186,122,.25);font-size:.72rem">+ Deposit</button>'
+    +'<button onclick="openAddTx(\'returns\')" class="btn" style="background:rgba(201,160,74,.12);color:var(--gold);border:1px solid rgba(201,160,74,.2);font-size:.72rem">+ Returns</button>'
+    +'<button onclick="openAddTx(\'withdrawal\')" class="btn btn-ghost" style="font-size:.72rem">+ Withdrawal</button>'
+    +'<button onclick="openAddTx(\'other\')" class="btn btn-ghost" style="font-size:.72rem">+ Other</button>'
+    +'</div>'
+
+    +'<div class="drawer-section">Financial Summary</div>'+finRows
+
+    +'<div class="drawer-section">Edit Client</div>'
+    +'<div style="margin-bottom:12px"><div class="field-label" style="margin-bottom:5px">Phone Number</div>'
+    +'<div class="editable-row">'
+    +'<input class="inline-input" id="edit-phone" value="'+(c.phone||'')+'" placeholder="+234…"/>'
+    +'<button class="btn btn-primary" onclick="saveField(\'phone\')">Save</button>'
+    +'</div></div>'
+    +'<div class="toggle-active">'
+    +'<div class="toggle-track '+(c.active?'on':'')+'" id="active-toggle" onclick="toggleActive()">'
+    +'<div style="position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;transition:transform .2s,background .2s;background:'+(c.active?'var(--pos)':'var(--muted)')+(c.active?';transform:translateX(18px)':'')+'">'
+    +'</div></div>'
+    +'<span style="font-size:.85rem;color:var(--muted)">Account <span id="active-label">'+(c.active?'Active':'Inactive')+'</span></span></div>'
+
+    +'<div class="drawer-section" style="display:flex;align-items:center;justify-content:space-between">'
+    +'<span>Transactions ('+txns.length+')</span>'+pgCtrl+'</div>'
+    +(txRows||'<div style="text-align:center;padding:20px;color:var(--muted);font-size:.85rem">No transactions yet.</div>');
+}
+
+function drPg(d){ drawerTxPage+=d; buildDrawer(drawerClient); }
+
+function closeDrawer(){
+  document.getElementById('detail-drawer').classList.remove('open');
+  document.getElementById('drawer-overlay').classList.remove('show');
+  activeDrawerEmail=null;
+}
+
+async function saveField(field){
+  if(!activeDrawerEmail) return;
+  const val=document.getElementById('edit-'+field)?.value?.trim();
+  try{
+    await apiFetch('/api/admin/clients/'+encodeURIComponent(activeDrawerEmail),{method:'PUT',body:JSON.stringify({[field]:val})});
+    toast('Client updated');
+  }catch(err){ toast('Update failed: '+err.message,'err'); }
+}
+
+async function toggleActive(){
+  if(!activeDrawerEmail) return;
+  const track=document.getElementById('active-toggle');
+  const label=document.getElementById('active-label');
+  if(!track||!label) return;
+  const newVal=!track.classList.contains('on');
+  try{
+    await apiFetch('/api/admin/clients/'+encodeURIComponent(activeDrawerEmail),{method:'PUT',body:JSON.stringify({active:newVal})});
+    track.classList.toggle('on',newVal);
+    label.textContent=newVal?'Active':'Inactive';
+    const knob=track.querySelector('div');
+    if(knob){ knob.style.transform=newVal?'translateX(18px)':''; knob.style.background=newVal?'var(--pos)':'var(--muted)'; }
+    toast('Client '+(newVal?'activated':'deactivated'));
+  }catch(err){ toast('Update failed: '+err.message,'err'); }
+}
+
+// ── DELETE TRANSACTION ───────────────────────────────────────────────
+function askDeleteTx(sn){
+  // Hide any other open confirms first
+  document.querySelectorAll('[id^="del-confirm-"]').forEach(el=>el.style.display='none');
+  const el=document.getElementById('del-confirm-'+sn);
+  if(el) el.style.display='flex';
+}
+async function doDeleteTx(sn){
+  if(!activeDrawerEmail) return;
+  try{
+    await apiFetch('/api/admin/clients/'+encodeURIComponent(activeDrawerEmail)+'/transactions/'+sn,{method:'DELETE'});
+    toast('Transaction deleted');
+    await refreshDrawer();
+    apiFetch('/api/admin/stats').then(s=>{if(s){stats=s;populateShell();}});
+  }catch(err){ toast('Delete failed: '+err.message,'err'); }
+}
+
+// ── ADD TRANSACTION MODAL ────────────────────────────────────────────
+function openAddTx(preset){
+  if(!activeDrawerEmail||!drawerClient) return;
+  const c=drawerClient;
+  const modal=document.getElementById('add-tx-modal');
+  modal.querySelector('#modal-title').textContent='Add Transaction';
+  modal.querySelector('#modal-subtitle').textContent=c.fn+' '+c.ln+' · '+c.email;
+  modal.querySelector('#modal-balance').textContent='Current balance: '+fmt(c.assets);
+  modal.querySelector('#modal-error').style.display='none';
+  modal.querySelector('#tx-amount').value='';
+  modal.querySelector('#tx-note').value='';
+  modal.querySelector('#tx-status').value='Completed';
+  modal.querySelector('#tx-date').value=new Date().toISOString().split('T')[0];
+  const sel=modal.querySelector('#tx-type');
+  sel.value=preset==='returns'?'Returns':preset==='withdrawal'?'Withdrawal':preset==='other'?'Custom':sel.options[0].value;
+  const customRow=modal.querySelector('#custom-row');
+  customRow.style.display=preset==='other'?'flex':'none';
+  modal.querySelector('#add-btn-text').textContent='Add Transaction';
+  modal.querySelector('#tx-submit').disabled=false;
+  modal.querySelector('#tx-preview').style.display='none';
+  modal.classList.add('show');
+  setTimeout(()=>modal.querySelector('#tx-amount').focus(),80);
+}
+
+function closeTxModal(){
+  document.getElementById('add-tx-modal').classList.remove('show');
+}
+
+function onTxTypeChange(){
+  const sel=document.getElementById('tx-type');
+  const customRow=document.getElementById('custom-row');
+  customRow.style.display=sel.value==='Custom'?'flex':'none';
+  updatePreview();
+}
+
+function updatePreview(){
+  if(!drawerClient) return;
+  const amt=parseFloat(document.getElementById('tx-amount').value)||0;
+  const preview=document.getElementById('tx-preview');
+  if(amt<=0){ preview.style.display='none'; return; }
+  const sel=document.getElementById('tx-type');
+  const customInput=document.getElementById('tx-custom-type');
+  const t=(sel.value==='Custom')?(customInput.value||'Custom'):sel.value;
+  const tl=t.toLowerCase();
+  const isC=tl.includes('return')||['deposit','credit','referral','yield','bonus'].some(x=>tl.includes(x));
+  const isD=['withdrawal','debit'].some(x=>tl.includes(x));
+  const c=drawerClient;
+  let newBal=c.assets, col='var(--text)', lbl=t;
+  if(isC){newBal=c.assets+amt; col='var(--pos)'; lbl='+ '+t;}
+  else if(isD){newBal=c.assets-amt; col='var(--neg)'; lbl='- '+t;}
+  preview.style.display='block';
+  preview.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center">'
+    +'<span style="font-family:var(--font-m);font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--dim)">'+lbl+'</span>'
+    +'<span style="font-family:var(--font-d);font-size:1.4rem;font-weight:600;color:'+col+'">'+fmt(amt)+'</span>'
+    +'</div>'
+    +'<div style="font-family:var(--font-m);font-size:.75rem;color:var(--muted);margin-top:4px">New balance: '+fmt(newBal)+'</div>';
+}
+
+async function submitAddTx(){
+  const errEl=document.getElementById('modal-error');
+  const btn=document.getElementById('tx-submit');
+  const sel=document.getElementById('tx-type');
+  const customInput=document.getElementById('tx-custom-type');
+  const txType=(sel.value==='Custom')?(customInput.value.trim()||''):sel.value;
+  const amount=parseFloat(document.getElementById('tx-amount').value);
+  const date=document.getElementById('tx-date').value;
+  const status=document.getElementById('tx-status').value;
+  const note=document.getElementById('tx-note').value.trim();
+  errEl.style.display='none';
+  if(!txType){errEl.textContent='Transaction type is required';errEl.style.display='block';return;}
+  if(!amount||amount<=0){errEl.textContent='Enter a valid amount greater than zero';errEl.style.display='block';return;}
+  if(!date){errEl.textContent='Date is required';errEl.style.display='block';return;}
+  btn.disabled=true; document.getElementById('add-btn-text').textContent='Adding…';
+  try{
+    await apiFetch('/api/admin/clients/'+encodeURIComponent(activeDrawerEmail)+'/transactions',{
+      method:'POST',body:JSON.stringify({type:txType,amount,date,status,note})
+    });
+    closeTxModal();
+    toast(txType+' of '+fmt(amount)+' added ✓');
+    await refreshDrawer();
+    apiFetch('/api/admin/stats').then(s=>{if(s){stats=s;populateShell();}});
+  }catch(err){errEl.textContent=err.message;errEl.style.display='block';}
+  finally{btn.disabled=false; document.getElementById('add-btn-text').textContent='Add Transaction';}
+}
+
+// ── EDIT TRANSACTION MODAL ──────────────────────────────────────────
+function openEditTx(sn){
+  if(!drawerClient) return;
+  const t=(drawerClient.transactions||[]).find(x=>String(x.sn)===String(sn));
+  if(!t){toast('Transaction not found','err');return;}
+  editTxSn=sn;
+  const modal=document.getElementById('edit-tx-modal');
+  modal.querySelector('#edit-modal-ref').textContent='SN #'+sn+' · '+drawerClient.fn+' '+drawerClient.ln;
+  modal.querySelector('#edit-modal-error').style.display='none';
+  modal.querySelector('#edit-tx-type').value=t.type||'';
+  modal.querySelector('#edit-tx-amount').value=t.amount||'';
+  modal.querySelector('#edit-tx-status').value=t.status||'Completed';
+  modal.querySelector('#edit-tx-note').value=t.note||'';
+  // Normalise date to YYYY-MM-DD
+  let d=t.date||'';
+  if(d.includes('T')) d=d.split('T')[0];
+  else if(/[A-Za-z]/.test(d)){try{const p=new Date(d+' 2025');if(!isNaN(p))d=p.toISOString().split('T')[0];}catch{}}
+  modal.querySelector('#edit-tx-date').value=d;
+  const sb=modal.querySelector('#edit-submit');
+  sb.disabled=false; sb.textContent='Save Changes';
+  modal.classList.add('show');
+  setTimeout(()=>modal.querySelector('#edit-tx-amount').focus(),80);
+}
+
+function closeEditTxModal(){
+  document.getElementById('edit-tx-modal').classList.remove('show');
+  editTxSn=null;
+}
+
+async function submitEditTx(){
+  if(!editTxSn||!activeDrawerEmail) return;
+  const errEl=document.getElementById('edit-modal-error');
+  const btn=document.getElementById('edit-submit');
+  const updates={
+    type:document.getElementById('edit-tx-type').value.trim(),
+    amount:parseFloat(document.getElementById('edit-tx-amount').value),
+    date:document.getElementById('edit-tx-date').value,
+    status:document.getElementById('edit-tx-status').value,
+    note:document.getElementById('edit-tx-note').value.trim(),
+  };
+  errEl.style.display='none';
+  if(!updates.type){errEl.textContent='Type is required';errEl.style.display='block';return;}
+  if(!updates.amount||updates.amount<=0){errEl.textContent='Enter a valid amount';errEl.style.display='block';return;}
+  btn.disabled=true; btn.textContent='Saving…';
+  try{
+    await apiFetch('/api/admin/clients/'+encodeURIComponent(activeDrawerEmail)+'/transactions/'+editTxSn,{
+      method:'PUT',body:JSON.stringify(updates)
+    });
+    closeEditTxModal();
+    toast('Transaction #'+editTxSn+' updated ✓');
+    await refreshDrawer();
+    apiFetch('/api/admin/stats').then(s=>{if(s){stats=s;populateShell();}});
+  }catch(err){errEl.textContent=err.message;errEl.style.display='block';}
+  finally{btn.disabled=false; btn.textContent='Save Changes';}
+}
+
+// Close modals on overlay click + ESC key
+document.addEventListener('DOMContentLoaded',function(){
+  ['add-tx-modal','edit-tx-modal'].forEach(function(id){
+    const el=document.getElementById(id);
+    if(el) el.addEventListener('click',function(e){if(e.target===this){id==='add-tx-modal'?closeTxModal():closeEditTxModal();}});
+  });
+});
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){closeTxModal();closeEditTxModal();}
+});
+
+// ── UPLOAD ────────────────────────────────────────────────────────────
+function dragOver(e){ e.preventDefault(); document.getElementById('upload-zone').classList.add('drag-over'); }
+function dragLeave(){ document.getElementById('upload-zone').classList.remove('drag-over'); }
+function dropFile(e){
+  e.preventDefault(); dragLeave();
+  const file=e.dataTransfer?.files?.[0];
+  if(file) uploadFile(file);
+}
+
+async function uploadFile(file){
+  if(!file) return;
+  const ext=file.name.split('.').pop().toLowerCase();
+  if(!['tsv','csv','xlsx','xls'].includes(ext)){
+    toast('Unsupported file type: .'+ext,'err'); return;
+  }
+  const statusEl=document.getElementById('upload-status');
+  const textEl=document.getElementById('up-text');
+  const spEl=document.getElementById('up-spinner');
+  const statsEl=document.getElementById('upload-stats');
+
+  statusEl.className='upload-status show loading';
+  spEl.style.display='block';
+  textEl.innerHTML=`<strong>Uploading ${file.name}</strong><br><span style="color:var(--muted);font-size:.8rem">Parsing ${(file.size/1024).toFixed(0)}KB — this may take a few seconds…</span>`;
+  statsEl.style.display='none';
+
+  const formData=new FormData();
+  formData.append('file',file);
+
+  try {
+    const res=await fetch(API+'/api/admin/upload',{method:'POST',headers:{'Authorization':'Bearer '+token},body:formData});
+    const json=await res.json();
+    if(!res.ok) throw new Error(json.detail||'Upload failed');
+
+    statusEl.className='upload-status show success';
+    spEl.style.display='none';
+    textEl.innerHTML=`<strong style="color:var(--pos)">✓ Upload successful</strong><br><span style="color:var(--muted);font-size:.8rem">${json.message}</span>`;
+    statsEl.style.display='grid';
+    statsEl.innerHTML=[
+      [json.client_count,'Clients Updated'],
+      [json.tx_count?.toLocaleString(),'Transactions Parsed'],
+      [new Date().toLocaleTimeString(),'Completed At'],
+    ].map(([v,l])=>`<div class="up-stat"><div class="up-stat-val">${v}</div><div class="up-stat-lbl">${l}</div></div>`).join('');
+
+    // Refresh stats
+    stats=await apiFetch('/api/admin/stats');
+    if(stats) populateShell();
+
+    // Save history
+    uploadHistory.unshift({file:file.name,date:new Date().toISOString(),clients:json.client_count,txns:json.tx_count});
+    uploadHistory=uploadHistory.slice(0,10);
+    localStorage.setItem('in_upload_history',JSON.stringify(uploadHistory));
+    renderUploadHistory();
+    toast('Database updated — '+json.client_count+' clients');
+  } catch(err){
+    statusEl.className='upload-status show error';
+    spEl.style.display='none';
+    textEl.innerHTML=`<strong style="color:var(--neg)">✕ Upload failed</strong><br><span style="color:var(--muted);font-size:.8rem">${err.message}</span>`;
+    toast('Upload failed: '+err.message,'err');
+  }
+}
+
+function renderUploadHistory(){
+  const el=document.getElementById('upload-history'); if(!el) return;
+  if(!uploadHistory.length){ el.innerHTML='<div style="font-size:.83rem;color:var(--muted)">No recent uploads recorded.</div>'; return; }
+  el.innerHTML=uploadHistory.map(u=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px;background:var(--raised);border-radius:6px;border:1px solid var(--border)">
+      <div>
+        <div style="font-size:.83rem;font-weight:500">${u.file}</div>
+        <div style="font-family:var(--font-m);font-size:.7rem;color:var(--muted);margin-top:2px">${new Date(u.date).toLocaleString('en-GB')} · ${u.clients} clients · ${u.txns?.toLocaleString()} txns</div>
+      </div>
+      <span class="badge b-ok">Done</span>
+    </div>`).join('');
+}
+
+// ── ANALYTICS ─────────────────────────────────────────────────────────
+async function renderAnalytics(){
+  showEl('loading',true);
+  try {
+    const data=await apiFetch('/api/admin/clients?page=1&per_page=9999');
+    if(!data) return; hideEl('loading');
+    const clients=data.clients;
+
+    // Concentration chart — top 20
+    const top20=clients.slice(0,20);
+    const otherAssets=clients.slice(20).reduce((a,c)=>a+c.assets,0);
+    const ctx1=document.getElementById('an-concentration'); if(!ctx1) return;
+    if(charts.concentration) charts.concentration.destroy();
+    charts.concentration=new Chart(ctx1,{
+      type:'bar',
+      data:{labels:[...top20.map(c=>c.fn),'Others'],
+        datasets:[{data:[...top20.map(c=>c.assets),otherAssets],
+          backgroundColor:[...top20.map((_,i)=>`rgba(201,160,74,${1-i*0.04})`), 'rgba(234,230,220,.1)'],
+          borderRadius:3,borderSkipped:false}]},
+      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:tooltipStyle},
+        scales:{x:{grid:{color:'rgba(234,230,220,.04)'},border:{display:false},ticks:{font:chartFont(9),color:'rgba(234,230,220,.3)',callback:v=>fmtK(v)}},
+          y:{grid:{display:false},border:{display:false},ticks:{font:chartFont(8.5),color:'rgba(234,230,220,.5)'}}}}
+    });
+
+    // Retention distribution — bucket clients
+    const buckets={'0–10%':0,'10–25%':0,'25–50%':0,'50–75%':0,'75–100%':0,'100%+':0};
+    clients.forEach(c=>{
+      const r=c.deposits>0?c.assets/c.deposits*100:0;
+      if(r<10) buckets['0–10%']++;
+      else if(r<25) buckets['10–25%']++;
+      else if(r<50) buckets['25–50%']++;
+      else if(r<75) buckets['50–75%']++;
+      else if(r<100) buckets['75–100%']++;
+      else buckets['100%+']++;
+    });
+    const ctx2=document.getElementById('an-retention'); if(!ctx2) return;
+    if(charts.retention) charts.retention.destroy();
+    charts.retention=new Chart(ctx2,{
+      type:'bar',
+      data:{labels:Object.keys(buckets),datasets:[{data:Object.values(buckets),backgroundColor:'rgba(0,135,81,.6)',borderRadius:4,borderSkipped:false}]},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:{...tooltipStyle,callbacks:{label:c=>`  ${c.raw} clients`}}},
+        scales:{x:{grid:{display:false},border:{display:false},ticks:{font:chartFont(10),color:'rgba(234,230,220,.4)'}},
+          y:{grid:{color:'rgba(234,230,220,.04)'},border:{display:false},ticks:{font:chartFont(9.5),color:'rgba(234,230,220,.3)'}}}}
+    });
+
+    // Yearly aggregate
+    const yearlyAgg={};
+    clients.forEach(c=>(c.yearly||[]).forEach(y=>{
+      if(!yearlyAgg[y.year]) yearlyAgg[y.year]={deposits:0,withdrawals:0,returns:0};
+      yearlyAgg[y.year].deposits+=y.deposits;
+      yearlyAgg[y.year].withdrawals+=y.withdrawals;
+      yearlyAgg[y.year].returns+=y.returns;
+    }));
+    const years=Object.keys(yearlyAgg).sort();
+    const ctx3=document.getElementById('an-yearly'); if(!ctx3) return;
+    if(charts.yearly) charts.yearly.destroy();
+    charts.yearly=new Chart(ctx3,{
+      type:'bar',
+      data:{labels:years,datasets:[
+        {label:'Inflows (Deposits + Returns)',data:years.map(y=>yearlyAgg[y].deposits+yearlyAgg[y].returns),backgroundColor:'rgba(201,160,74,.7)',borderRadius:4,borderSkipped:false},
+        {label:'Outflows (Withdrawals)',data:years.map(y=>yearlyAgg[y].withdrawals),backgroundColor:'rgba(224,82,82,.25)',borderRadius:4,borderSkipped:false},
+      ]},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{position:'top',labels:{font:chartFont(11),color:'rgba(234,230,220,.4)',boxWidth:10,padding:14}},tooltip:tooltipStyle},
+        scales:{x:{grid:{display:false},border:{display:false},ticks:{font:chartFont(10.5),color:'rgba(234,230,220,.4)'}},
+          y:{grid:{color:'rgba(234,230,220,.04)'},border:{display:false},ticks:{font:chartFont(9.5),color:'rgba(234,230,220,.3)',callback:v=>fmtK(v)}}}}
+    });
+  } catch(err){ hideEl('loading'); toast('Analytics error: '+err.message,'err'); }
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────
+(async()=>{
+  if(token){
+    try {
+      stats=await apiFetch('/api/admin/stats');
+      if(stats){
+        document.getElementById('login-screen').style.display='none';
+        document.getElementById('app-shell').style.display='block';
+        populateShell(); renderDashboard();
+      } else { localStorage.removeItem('in_admin_token'); token=null; }
+    } catch { localStorage.removeItem('in_admin_token'); token=null; }
+  }
+  hideEl('loading');
+})();
+</script>
+<!-- ══ ADD TRANSACTION MODAL ══════════════════════════════════════ -->
+<div class="modal-bg" id="add-tx-modal">
+  <div class="modal-box">
+    <div class="mh">
+      <div>
+        <div class="mh-title" id="modal-title">Add Transaction</div>
+        <div class="mh-sub" id="modal-subtitle"></div>
+        <div class="mh-sub" id="modal-balance" style="color:var(--gold);margin-top:2px"></div>
+      </div>
+      <div class="mx" onclick="closeTxModal()">✕</div>
+    </div>
+    <div class="mb">
+      <div class="merr" id="modal-error"></div>
+
+      <div class="fg">
+        <label class="fl">Transaction Type <span class="req">*</span></label>
+        <select class="fs" id="tx-type" onchange="onTxTypeChange()">
+          <optgroup label="── Credits ──">
+            <option value="Deposit">Deposit</option>
+            <option value="Bank Deposit">Bank Deposit</option>
+            <option value="Cash Deposit">Cash Deposit</option>
+            <option value="Wallet Credit">Wallet Credit</option>
+          </optgroup>
+          <optgroup label="── Returns ──">
+            <option value="Returns">Returns</option>
+            <option value="Plan Credit">Plan Credit (Returns)</option>
+            <option value="Yield">Yield</option>
+            <option value="Referral Bonus">Referral Bonus</option>
+          </optgroup>
+          <optgroup label="── Debits ──">
+            <option value="Withdrawal">Withdrawal</option>
+            <option value="Wallet Debit">Wallet Debit</option>
+          </optgroup>
+          <optgroup label="── Other ──">
+            <option value="Custom">Custom type…</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <div class="fg" id="custom-row" style="display:none">
+        <label class="fl">Custom Type <span class="req">*</span></label>
+        <input class="fi" id="tx-custom-type" placeholder="e.g. Bonus Credit, Adjustment…" oninput="updatePreview()"/>
+      </div>
+
+      <div class="frow">
+        <div class="fg">
+          <label class="fl">Amount (₦) <span class="req">*</span></label>
+          <input class="fi" id="tx-amount" type="number" min="1" step="0.01" placeholder="0.00" oninput="updatePreview()"/>
+        </div>
+        <div class="fg">
+          <label class="fl">Date <span class="req">*</span></label>
+          <input class="fi" id="tx-date" type="date"/>
+        </div>
+      </div>
+
+      <div class="frow">
+        <div class="fg">
+          <label class="fl">Status</label>
+          <select class="fs" id="tx-status">
+            <option value="Completed">Completed</option>
+            <option value="TBD">TBD / Pending</option>
+            <option value="Processing">Processing</option>
+            <option value="Reversed">Reversed</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label class="fl">Note (optional)</label>
+          <input class="fi" id="tx-note" placeholder="Internal note…"/>
+        </div>
+      </div>
+
+      <div class="tx-preview" id="tx-preview"></div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-ghost" onclick="closeTxModal()">Cancel</button>
+      <button class="btn btn-primary" id="tx-submit" onclick="submitAddTx()">
+        <span id="add-btn-text">Add Transaction</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ EDIT TRANSACTION MODAL ════════════════════════════════════ -->
+<div class="modal-bg" id="edit-tx-modal">
+  <div class="modal-box">
+    <div class="mh">
+      <div>
+        <div class="mh-title">Edit Transaction</div>
+        <div class="mh-sub" id="edit-modal-ref"></div>
+      </div>
+      <div class="mx" onclick="closeEditTxModal()">✕</div>
+    </div>
+    <div class="mb">
+      <div class="merr" id="edit-modal-error"></div>
+
+      <div class="frow">
+        <div class="fg">
+          <label class="fl">Transaction Type</label>
+          <input class="fi" id="edit-tx-type" placeholder="e.g. Deposit, Returns…"/>
+        </div>
+        <div class="fg">
+          <label class="fl">Amount (₦)</label>
+          <input class="fi" id="edit-tx-amount" type="number" min="0.01" step="0.01"/>
+        </div>
+      </div>
+
+      <div class="frow">
+        <div class="fg">
+          <label class="fl">Date</label>
+          <input class="fi" id="edit-tx-date" type="date"/>
+        </div>
+        <div class="fg">
+          <label class="fl">Status</label>
+          <select class="fs" id="edit-tx-status">
+            <option value="Completed">Completed</option>
+            <option value="TBD">TBD / Pending</option>
+            <option value="Processing">Processing</option>
+            <option value="Reversed">Reversed</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="fg">
+        <label class="fl">Note</label>
+        <input class="fi" id="edit-tx-note" placeholder="Internal note…"/>
+      </div>
+      <div style="font-size:.78rem;color:var(--dim);margin-top:6px;line-height:1.5">
+        Saving will immediately recompute this client's balance, rankings, and analytics.
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-ghost" onclick="closeEditTxModal()">Cancel</button>
+      <button class="btn btn-primary" id="edit-submit" onclick="submitEditTx()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
