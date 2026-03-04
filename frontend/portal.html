@@ -588,9 +588,9 @@ input,select{font:inherit;color:inherit}
           <div class="pager">
             <span class="pg-info" id="tx-info">—</span>
             <div class="pg-btns">
-              <button class="pg-btn" id="pg-prev" onclick="txPage(-1)">← Prev</button>
+              <button class="pg-btn" id="pg-prev" onclick="changeTxPage(-1)">← Prev</button>
               <span class="pg-curr" id="pg-lbl">1/1</span>
-              <button class="pg-btn" id="pg-next" onclick="txPage(1)">Next →</button>
+              <button class="pg-btn" id="pg-next" onclick="changeTxPage(1)">Next →</button>
             </div>
           </div>
         </div>
@@ -1043,7 +1043,7 @@ function renderTxTable(all){
     </tr>`).join('');
 }
 
-function txPage(dir){ txPage+=dir; renderTxTable(clientData?.transactions||[]); window.scrollTo(0,0); }
+function changeTxPage(dir){ txPage+=dir; renderTxTable(clientData?.transactions||[]); window.scrollTo(0,0); }
 
 function exportCSV(){
   const rows=[['Ref','Date','Type','Amount','Credit/Debit','Status'],
