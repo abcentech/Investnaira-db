@@ -413,7 +413,7 @@ function setChrome(brand) {
     logoSub.textContent   = 'Invest';
     logoSub.style.display = '';
     navCta.textContent    = 'Open account';
-    navCta.href           = 'https://app.investnaira.ng/register';
+    navCta.href           = 'https://app.investnaira.com/register';
 
     navLinks.innerHTML = `
       <li><a href="#/wealth" data-route="wealth">Home</a></li>
@@ -529,7 +529,7 @@ function renderFooter(brand) {
             <ul>
               <li><a href="#/about">About</a></li>
               <li><a href="#/faq">FAQ</a></li>
-              <li><a href="mailto:hello@investnaira.ng">Contact</a></li>
+              <li><a href="mailto:hello@investnaira.com">Contact</a></li>
               <li><a href="#/">Back to hub</a></li>
             </ul>
           </div>
@@ -705,7 +705,7 @@ function renderWealthHome() {
               Curated investment campaigns across Nigerian real estate, equities, agriculture, and dollar assets. Start from ₦5,000.
             </p>
             <div style="display:flex;gap:var(--sp-l);align-items:center;flex-wrap:wrap;">
-              <a href="https://app.investnaira.ng/register" class="btn-primary" style="background:var(--c-wealth);">
+              <a href="https://app.investnaira.com/register" class="btn-primary" style="background:var(--c-wealth);">
                 <span>Open free account</span>
                 <span class="arr" aria-hidden="true">→</span>
               </a>
@@ -793,7 +793,7 @@ function renderWealthHome() {
                 <div><div class="camp-stat-n">${c.minInvest}</div><div class="camp-stat-l">Min. invest</div></div>
               </div>
               <div class="camp-min">
-                <a href="https://app.investnaira.ng/register" style="font-family:var(--font-mono);font-size:var(--s--1);letter-spacing:.07em;text-transform:uppercase;color:var(--c-wealth);border-block-end:1px solid currentColor;padding-block-end:2px;cursor:none;">
+                <a href="https://app.investnaira.com/register" style="font-family:var(--font-mono);font-size:var(--s--1);letter-spacing:.07em;text-transform:uppercase;color:var(--c-wealth);border-block-end:1px solid currentColor;padding-block-end:2px;cursor:none;">
                   Invest now →
                 </a>
               </div>
@@ -880,7 +880,7 @@ function renderWealthHome() {
         </h2>
         <p class="reveal" style="font-size:var(--s-1);font-weight:300;font-style:italic;color:var(--c-muted);max-width:40ch;margin-inline:auto;margin-block-end:var(--sp-2xl);">The second best time is right now. Open your account in under 3 minutes. No fees. Start from ₦5,000.</p>
         <div class="reveal" style="display:flex;gap:var(--sp-l);align-items:center;justify-content:center;flex-wrap:wrap;">
-          <a href="https://app.investnaira.ng/register" class="btn-primary" style="background:var(--c-wealth);">
+          <a href="https://app.investnaira.com/register" class="btn-primary" style="background:var(--c-wealth);">
             <span>Open free account</span>
             <span class="arr" aria-hidden="true">→</span>
           </a>
@@ -964,7 +964,7 @@ function renderHowItWorks() {
       </div>
 
       <div class="reveal" style="margin-block-start:var(--sp-2xl);display:flex;gap:var(--sp-l);flex-wrap:wrap;">
-        <a href="https://app.investnaira.ng/register" class="btn-primary" style="background:var(--c-wealth);"><span>Open account</span><span class="arr" aria-hidden="true">→</span></a>
+        <a href="https://app.investnaira.com/register" class="btn-primary" style="background:var(--c-wealth);"><span>Open account</span><span class="arr" aria-hidden="true">→</span></a>
         <a href="#/wealth/investments" class="btn-ghost">Browse campaigns</a>
       </div>
     </div>
@@ -1011,7 +1011,7 @@ function renderInvestments() {
             <div class="camp-min" style="display:flex;align-items:center;justify-content:space-between;">
               <span>Target: ${c.target}</span>
               ${c.status==='ACTIVE'
-                ? `<a href="https://app.investnaira.ng/register" style="font-family:var(--font-mono);font-size:var(--s--1);letter-spacing:.07em;text-transform:uppercase;color:var(--c-wealth);border-block-end:1px solid currentColor;padding-block-end:2px;cursor:none;">Invest →</a>`
+                ? `<a href="https://app.investnaira.com/register" style="font-family:var(--font-mono);font-size:var(--s--1);letter-spacing:.07em;text-transform:uppercase;color:var(--c-wealth);border-block-end:1px solid currentColor;padding-block-end:2px;cursor:none;">Invest →</a>`
                 : `<span style="font-family:var(--font-mono);font-size:var(--s--1);color:var(--c-muted);">Opening soon</span>`
               }
             </div>
@@ -1021,7 +1021,7 @@ function renderInvestments() {
 
       <div class="reveal" style="margin-block-start:var(--sp-2xl);text-align:center;padding-block-start:var(--sp-2xl);border-block-start:1px solid var(--c-border);">
         <p style="font-size:var(--s-0);font-weight:300;font-style:italic;color:var(--c-muted);margin-block-end:var(--sp-l);max-width:50ch;margin-inline:auto;">*Returns shown are target or historical figures. Past performance is not a guarantee of future returns. Capital at risk.</p>
-        <a href="https://app.investnaira.ng/register" class="btn-primary" style="background:var(--c-wealth);"><span>Open account to invest</span><span class="arr" aria-hidden="true">→</span></a>
+        <a href="https://app.investnaira.com/register" class="btn-primary" style="background:var(--c-wealth);"><span>Open account to invest</span><span class="arr" aria-hidden="true">→</span></a>
       </div>
     </div>
   `;
@@ -1076,7 +1076,7 @@ function renderFeatures() {
                   </li>
                 `).join('')}
               </ul>
-              <a href="https://app.investnaira.ng/register?type=${a.type.toLowerCase()}" class="btn-primary" style="background:var(--c-wealth);width:100%;justify-content:center;margin-block-start:var(--sp-xl);display:flex;">
+              <a href="https://app.investnaira.com/register?type=${a.type.toLowerCase()}" class="btn-primary" style="background:var(--c-wealth);width:100%;justify-content:center;margin-block-start:var(--sp-xl);display:flex;">
                 <span>Open ${a.name}</span>
                 <span class="arr" aria-hidden="true">→</span>
               </a>
@@ -1108,7 +1108,7 @@ function renderReferral() {
           <p class="ref-eyebrow">How it works</p>
           <h2 class="ref-h2">Share your link.<br>They invest.<br>You earn.</h2>
           <p class="ref-desc">Share your unique referral link. When a friend creates an account and completes their first investment, your wallet is credited automatically. The more active investors you refer, the more you earn — no cap.</p>
-          <a href="https://app.investnaira.ng/register" class="btn-primary" style="background:var(--c-wealth);display:inline-flex;"><span>Get your referral link</span><span class="arr" aria-hidden="true">→</span></a>
+          <a href="https://app.investnaira.com/register" class="btn-primary" style="background:var(--c-wealth);display:inline-flex;"><span>Get your referral link</span><span class="arr" aria-hidden="true">→</span></a>
         </div>
         <div>
           <div class="ref-stats">
@@ -1395,12 +1395,12 @@ function renderSubscribe() {
                 </li>
               `).join('')}
             </ul>
-            <a href="mailto:subscribe@investnaira.ng?subject=${encodeURIComponent(p.name+' Plan')}" class="plan-cta ${p.ctaStyle}">${p.cta}</a>
+            <a href="mailto:subscribe@investnaira.com?subject=${encodeURIComponent(p.name+' Plan')}" class="plan-cta ${p.ctaStyle}">${p.cta}</a>
           </div>
         `).join('')}
       </div>
       <div class="reveal" style="margin-block-start:var(--sp-2xl);text-align:center;">
-        <p style="font-family:var(--font-mono);font-size:var(--s--1);color:var(--c-muted);">All plans include 7-day free trial · No credit card required<br>Business plans: <a href="mailto:business@investnaira.ng" style="color:var(--c-research);border-block-end:1px solid currentColor;cursor:none;">contact us</a></p>
+        <p style="font-family:var(--font-mono);font-size:var(--s--1);color:var(--c-muted);">All plans include 7-day free trial · No credit card required<br>Business plans: <a href="mailto:business@investnaira.com" style="color:var(--c-research);border-block-end:1px solid currentColor;cursor:none;">contact us</a></p>
       </div>
     </div>`;
   initBehaviours();
@@ -1463,7 +1463,7 @@ function renderFAQ() {
       <div class="page-hero reveal">
         <p class="page-eye">Questions</p>
         <h1 class="page-h1">Frequently<br>asked.</h1>
-        <p class="page-sub">Email us at <a href="mailto:hello@investnaira.ng" style="color:var(--c-research);border-block-end:1px solid currentColor;cursor:none;">hello@investnaira.ng</a> if your question isn't here.</p>
+        <p class="page-sub">Email us at <a href="mailto:hello@investnaira.com" style="color:var(--c-research);border-block-end:1px solid currentColor;cursor:none;">hello@investnaira.com</a> if your question isn't here.</p>
       </div>
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-3xl);align-items:start;">
@@ -1496,7 +1496,7 @@ function renderFAQ() {
       </div>
 
       <div class="reveal" style="margin-block-start:var(--sp-3xl);display:flex;gap:var(--sp-l);flex-wrap:wrap;">
-        <a href="https://app.investnaira.ng/register" class="btn-primary" style="background:var(--c-wealth);"><span>Open investment account</span><span class="arr" aria-hidden="true">→</span></a>
+        <a href="https://app.investnaira.com/register" class="btn-primary" style="background:var(--c-wealth);"><span>Open investment account</span><span class="arr" aria-hidden="true">→</span></a>
         <a href="#/subscribe" class="btn-primary"><span>Subscribe to Research</span><span class="arr" aria-hidden="true">→</span></a>
       </div>
     </div>`;

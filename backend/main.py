@@ -35,9 +35,9 @@ app = FastAPI(
 # ── CORS ──────────────────────────────────────────────────────────────
 # Allow the marketing site, the app subdomain, and localhost for dev
 ALLOWED_ORIGINS = [
-    "https://investnaira.ng",
-    "https://www.investnaira.ng",
-    "https://app.investnaira.ng",
+    "https://investnaira.com",
+    "https://www.investnaira.com",
+    "https://app.investnaira.com",
     "https://investnaira-api.onrender.com",
     "https://investnaira.netlify.app",
     "http://localhost:3000",

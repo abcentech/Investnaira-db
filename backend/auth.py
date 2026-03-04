@@ -8,11 +8,11 @@ from typing import Optional
 # ── SECRETS ───────────────────────────────────────────────────────────
 # In production, set these as environment variables.
 JWT_SECRET = os.environ.get("JWT_SECRET", "investnaira-secret-change-in-production-2024")
-ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "admin@investnaira.ng").lower()
+ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "admin@investnaira.com").lower()
 
-# Admin password default: "InvestNaira2024!" — change via env var ADMIN_PASSWORD_HASH
+# Admin password default: "InvestNaira@2025!" — change via env var ADMIN_PASSWORD_HASH
 # To generate a new hash: python3 -c "from auth import hash_password; print(hash_password('yourpassword'))"
-_DEFAULT_ADMIN_PASS = "InvestNaira2024!"
+_DEFAULT_ADMIN_PASS = "InvestNaira@2025!"
 ADMIN_PASSWORD_HASH = os.environ.get(
     "ADMIN_PASSWORD_HASH",
     hashlib.sha256((_DEFAULT_ADMIN_PASS + JWT_SECRET).encode()).hexdigest()
