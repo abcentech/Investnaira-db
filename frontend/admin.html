@@ -330,6 +330,10 @@ input,select,textarea{font:inherit;color:inherit}
           <div class="pg-title">Platform Overview</div>
           <div class="pg-sub" id="dash-subtitle">InvestNaira client portfolio summary</div>
         </div>
+        <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap">
+          <button class="btn btn-ghost" onclick="exportCSV('transactions')" style="font-size:.75rem">⬇ All Transactions CSV</button>
+          <button class="btn btn-ghost" onclick="exportCSV('clients')" style="font-size:.75rem">⬇ Client Summary CSV</button>
+        </div>
         <div class="g4 e d1" id="kpi-row"></div>
         <div class="g21 e d2">
           <div class="card cp">
@@ -706,6 +710,26 @@ async function exportAllCSV(){
 }
 
 // ── CLIENT DETAIL DRAWER ──────────────────────────────────────────────
+// ── CSV EXPORT ────────────────────────────────────────────────────────
+async function exportCSV(type){
+  try{
+    const res=await fetch(API+'/api/admin/export/'+type,{
+      headers:{'Authorization':'Bearer '+token}
+    });
+    if(!res.ok) throw new Error('Export failed');
+    const blob=await res.blob();
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download='investnaira_'+type+'.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast('Downloaded investnaira_'+type+'.csv ✓');
+  }catch(err){ toast('Export failed: '+err.message,'err'); }
+}
+
 // ── DRAWER ─────────────────────────────────────────────────────────────
 let drawerClient=null, drawerTxPage=1, editTxSn=null;
 const DR_PER=20;

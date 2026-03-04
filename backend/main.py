@@ -310,7 +310,7 @@ def update_client(email: str, updates: dict, _: dict = Depends(get_current_admin
 
 
 
-@app.post("/api/admin/clients/{email:path}/transactions")
+@app.post("/api/admin/clients/{email}/transactions")
 def add_transaction(email: str, tx: dict, _: dict = Depends(get_current_admin)):
     """Add a new transaction to a client. Body: {type, amount, date, status, note}"""
     from datetime import date as dt_date
@@ -364,7 +364,7 @@ def add_transaction(email: str, tx: dict, _: dict = Depends(get_current_admin)):
     return {"message": "Transaction added", "transaction": new_tx, "new_assets": assets}
 
 
-@app.put("/api/admin/clients/{email:path}/transactions/{sn}")
+@app.put("/api/admin/clients/{email}/transactions/{sn}")
 def edit_transaction(email: str, sn: str, updates: dict, _: dict = Depends(get_current_admin)):
     """Edit an existing transaction by SN. Editable: type, amount, date, status, note"""
     from parser import build_monthly, build_yearly
@@ -404,7 +404,7 @@ def edit_transaction(email: str, sn: str, updates: dict, _: dict = Depends(get_c
     return {"message": "Transaction updated", "sn": sn}
 
 
-@app.delete("/api/admin/clients/{email:path}/transactions/{sn}")
+@app.delete("/api/admin/clients/{email}/transactions/{sn}")
 def delete_transaction(email: str, sn: str, _: dict = Depends(get_current_admin)):
     """Delete a transaction by SN and recompute client aggregates."""
     from parser import build_monthly, build_yearly
@@ -434,6 +434,59 @@ def delete_transaction(email: str, sn: str, _: dict = Depends(get_current_admin)
     db.rerank()
     logger.info(f"Admin deleted SN {sn} for {email}")
     return {"message": "Transaction deleted", "sn": sn}
+
+
+@app.get("/api/admin/export/transactions")
+def export_all_transactions(_: dict = Depends(get_current_admin)):
+    """Export all client transactions as CSV."""
+    import csv, io
+    all_clients = db.get_all_clients()
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["SN","Date","Client Name","Email","Type","Amount","Status","Note","Is Credit"])
+    for c in sorted(all_clients, key=lambda x: x.get("fn","")):
+        name = c.get("fn","") + " " + c.get("ln","")
+        for t in c.get("transactions", []):
+            writer.writerow([
+                t.get("sn",""), t.get("date",""),
+                name, c.get("email",""),
+                t.get("type",""), t.get("amount",""),
+                t.get("status",""), t.get("note",""),
+                t.get("is_credit",""),
+            ])
+    output.seek(0)
+    from fastapi.responses import StreamingResponse
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=investnaira_transactions.csv"}
+    )
+
+
+@app.get("/api/admin/export/clients")
+def export_all_clients(_: dict = Depends(get_current_admin)):
+    """Export client summary as CSV."""
+    import csv, io
+    all_clients = db.get_all_clients()
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["Rank","First Name","Last Name","Email","Phone","Assets","Deposits","Returns","Withdrawals","Transactions","Since","Active"])
+    for c in sorted(all_clients, key=lambda x: x.get("rank", 9999)):
+        writer.writerow([
+            c.get("rank",""), c.get("fn",""), c.get("ln",""),
+            c.get("email",""), c.get("phone",""),
+            c.get("assets",""), c.get("deposits",""),
+            c.get("returns",""), c.get("withdrawals",""),
+            c.get("tx_count",""), c.get("since",""),
+            c.get("active", True),
+        ])
+    output.seek(0)
+    from fastapi.responses import StreamingResponse
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=investnaira_clients.csv"}
+    )
 
 
 @app.post("/api/admin/upload")
