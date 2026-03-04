@@ -86,16 +86,64 @@ class ClientDatabase:
             return True
 
     def replace_all(self, new_data: dict):
-        """Replace entire database — called after successful upload parse."""
+        """
+        Merge uploaded data with existing database.
+        - Preserves admin-added transactions (added_by_admin=True)
+        - Preserves manual field edits (active, notes, phone)
+        - Recomputes aggregates after merging
+        """
+        from parser import build_monthly, build_yearly
+
         with self._lock:
-            # Preserve manual edits (active status, notes, phone overrides)
             for email, new_client in new_data.items():
-                existing = self._data.get(email.lower())
+                email_lower = email.lower()
+                existing = self._data.get(email_lower)
+
                 if existing:
-                    # Keep manual fields that aren't in the transaction data
-                    for field in ("active", "notes"):
-                        if field in existing:
+                    # 1. Preserve manual fields
+                    for field in ("active", "notes", "phone"):
+                        if field in existing and existing[field]:
                             new_client[field] = existing[field]
+
+                    # 2. Collect admin-added transactions not in the new upload
+                    existing_sns = {str(t.get("sn","")) for t in new_client.get("transactions", [])}
+                    admin_txns = [
+                        t for t in existing.get("transactions", [])
+                        if t.get("added_by_admin") and str(t.get("sn","")) not in existing_sns
+                    ]
+
+                    # 3. Merge admin transactions into new client data
+                    if admin_txns:
+                        merged = new_client["transactions"] + admin_txns
+                        # Sort by date descending
+                        def sort_key(t):
+                            d = t.get("date","")
+                            try:
+                                from datetime import datetime
+                                if 'T' in d: return datetime.fromisoformat(d.replace('Z',''))
+                                return datetime.strptime(d[:10], "%Y-%m-%d")
+                            except:
+                                return datetime.min
+                        merged.sort(key=sort_key, reverse=True)
+                        new_client["transactions"] = merged
+
+                        # Recompute aggregates including admin transactions
+                        deps = wds = rets = 0.0
+                        for t in merged:
+                            tl = t.get("type","").lower()
+                            amt = float(t.get("amount", 0))
+                            if "return" in tl:                                              rets += amt
+                            elif any(x in tl for x in ["deposit","credit","referral","yield","bonus"]): deps += amt
+                            elif any(x in tl for x in ["withdrawal","debit"]):             wds  += amt
+
+                        new_client["deposits"]     = round(deps, 2)
+                        new_client["withdrawals"]  = round(wds, 2)
+                        new_client["returns"]      = round(rets, 2)
+                        new_client["assets"]       = round(deps + rets - wds, 2)
+                        new_client["tx_count"]     = len(merged)
+                        new_client["monthly"]      = build_monthly(merged)
+                        new_client["yearly"]       = build_yearly(merged)
+
             self._data = {k.lower(): v for k, v in new_data.items()}
             self._save()
 
